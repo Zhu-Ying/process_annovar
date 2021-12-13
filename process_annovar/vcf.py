@@ -26,7 +26,10 @@ def recovery_del(av_snv: AVSnv, fasta: FastaFile) -> VCFSnv:
 
 
 def recovery_snp(av_snv: AVSnv) -> VCFSnv:
-    return VCFSnv(chrom=av_snv.chrom, pos=av_snv.start, ref=av_snv.ref, alt=av_snv.alt)
+    return VCFSnv(chrom=av_snv.chrom,
+                  pos=av_snv.start,
+                  ref=av_snv.ref,
+                  alt=av_snv.alt)
 
 
 def read_avinput(infile: str) -> list[AVSnv]:
@@ -34,17 +37,17 @@ def read_avinput(infile: str) -> list[AVSnv]:
     fi = open(infile)
     for line in fi:
         line = line.strip()
-        if not line or line.startswith('#'): continue
+        if not line or line.startswith('#'):
+            continue
         fields = line.split('\t')
         info = fields[5] if len(fields) > 5 else '.'
-        snvs.append(AVSnv(
-            chrom=fields[0],
-            start=int(fields[1]),
-            end=int(fields[2]),
-            ref=fields[3],
-            alt=fields[4],
-            info=info
-        ))
+        snvs.append(
+            AVSnv(chrom=fields[0],
+                  start=int(fields[1]),
+                  end=int(fields[2]),
+                  ref=fields[3],
+                  alt=fields[4],
+                  info=info))
     return snvs
 
 
@@ -63,5 +66,7 @@ def avinput_to_vcf(avinput: str, reference: str, vcf: str):
             vcf_snv = recovery_snp(av_snv)
         av_id = f'{av_snv.chrom}:{av_snv.start}:{av_snv.end}:{av_snv.ref}:{av_snv.alt}'
         vcf_id = f'{vcf_snv.chrom}:{vcf_snv.pos}:{vcf_snv.ref}:{vcf_snv.alt}'
-        fo.write(f'{vcf_snv.chrom}\t{vcf_snv.pos}\t{av_id}/{vcf_id}\t{vcf_snv.ref}\t{vcf_snv.alt}\t.\t.\t{av_snv.info}\n')
+        fo.write(
+            f'{vcf_snv.chrom}\t{vcf_snv.pos}\t{av_id}/{vcf_id}\t{vcf_snv.ref}\t{vcf_snv.alt}\t.\t.\t{av_snv.info}\n'
+        )
     fo.close()

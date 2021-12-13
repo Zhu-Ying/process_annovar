@@ -2,6 +2,7 @@ import csv
 import re
 
 from collections import namedtuple
+from typing import Union
 
 GeneAnno = namedtuple('GeneAnno', ['gene', 'region', 'detail', 'event'])
 Snv = namedtuple('Snv', ['chrom', 'start', 'end', 'ref', 'alt'])
@@ -66,7 +67,7 @@ def read_refgene(refgene: str):
     fi.close()
 
 
-def parse_row(row: dict, gene_db: str) -> [Snv, dict[str:GeneAnno], dict[str:str]]:
+def parse_row(row: dict, gene_db: str) -> Union[Snv, dict[str:GeneAnno], dict[str:str]]:
     snv = Snv(chrom=row.get('#Chr'), start=row.get('Start'), end=row.get('End'), ref=row.get('Ref'), alt=row.get('Alt'))
     info = dict()
     for key, val in row.items():
@@ -88,12 +89,12 @@ def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_db: str, outf
     fi = open(avoutput)
     fo = open(outfile, 'w')
     reader = csv.DictReader(fi, delimiter='\t')
-    head = f'#Chr\tStart\tEnd\tRef\tAlt\tGene\tEvent\tRegion\tDetail\t'
+    head = '#Chr\tStart\tEnd\tRef\tAlt\tGene\tEvent\tRegion\tDetail\t'
     info_keys = list()
     for row in reader:
         snv, gene_annos, info = parse_row(row, gene_db)
         if not info_keys:
-            info_keys = list(info.keys())
+            info_keys = list(info.keys()) 
             head += '\t'.join(info_keys)
             fo.write(f'{head}\n')
         info_text = '\t'.join([info.get(key, '.') for key in info_keys])
