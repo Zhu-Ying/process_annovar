@@ -1,15 +1,15 @@
 import setuptools
 
-# with open("README.md", "r") as fh:
-#     long_description = fh.read()
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setuptools.setup(
-    name="process_annovar",
+    name="annovar_tools",
     version="0.0.1",
     author="Ying Zhu",
     author_email="win19890412@163.com",
-    # description="A tools of bam to image",
-    # long_description=long_description,
+    description="tools for ANNOVAR",
+    long_description=long_description,
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

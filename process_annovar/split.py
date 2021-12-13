@@ -10,14 +10,12 @@ TRANS_TO_GENES: dict[str:set] = dict()
 
 
 def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -> list[GeneAnno]:
-    print(func, gene, exonic_func)
     funcs = func.split(';') if func else []
     genes = gene.split(';') if gene else []
     gene_details = re.split(r',|;', gene_detail) if gene_detail else []
     aa_changes = re.split(r',|;', aa_change) if aa_change else []
     gene_anno_dict = dict()
     in_gene = bool(set(funcs) - {'intergenic', 'upstream', 'downstream'})
-    print(funcs, genes, exonic_func)
     if in_gene:
         if len(genes) >= len(funcs):
             if exonic_func != '.':
@@ -89,12 +87,12 @@ def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_db: str, outf
     fi = open(avoutput)
     fo = open(outfile, 'w')
     reader = csv.DictReader(fi, delimiter='\t')
-    head = '#Chr\tStart\tEnd\tRef\tAlt\tGene\tEvent\tRegion\tDetail\t'
+    head = 'Chr\tStart\tEnd\tRef\tAlt\tGene\tEvent\tRegion\tDetail\t'
     info_keys = list()
     for row in reader:
         snv, gene_annos, info = parse_row(row, gene_db)
         if not info_keys:
-            info_keys = list(info.keys()) 
+            info_keys = list(info.keys())
             head += '\t'.join(info_keys)
             fo.write(f'{head}\n')
         info_text = '\t'.join([info.get(key, '.') for key in info_keys])
