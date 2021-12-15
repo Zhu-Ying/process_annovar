@@ -1,7 +1,7 @@
 from pysam import FastaFile
 from collections import namedtuple
 
-AVSnv = namedtuple('AVSnv', ['chrom', 'start', 'end', 'ref', 'alt', 'info'])
+AVSnv = namedtuple('AVSnv', ['id', 'chrom', 'start', 'end', 'ref', 'alt', 'info'])
 VCFSnv = namedtuple('VCFSnv', ['chrom', 'pos', 'ref', 'alt'])
 
 
@@ -47,6 +47,7 @@ def read_avinput(infile: str) -> list[AVSnv]:
                   end=int(fields[2]),
                   ref=fields[3],
                   alt=fields[4],
+                  id=':'.join(fields[0:5]),
                   info=info))
     return snvs
 
@@ -64,9 +65,7 @@ def avinput_to_vcf(avinput: str, reference: str, vcf: str):
             vcf_snv = recovery_del(av_snv, fasta)
         else:
             vcf_snv = recovery_snp(av_snv)
-        av_id = f'{av_snv.chrom}:{av_snv.start}:{av_snv.end}:{av_snv.ref}:{av_snv.alt}'
-        vcf_id = f'{vcf_snv.chrom}:{vcf_snv.pos}:{vcf_snv.ref}:{vcf_snv.alt}'
         fo.write(
-            f'{vcf_snv.chrom}\t{vcf_snv.pos}\t{av_id}/{vcf_id}\t{vcf_snv.ref}\t{vcf_snv.alt}\t.\t.\t{av_snv.info}\n'
+            f'{vcf_snv.chrom}\t{vcf_snv.pos}\t{av_snv.id}\t{vcf_snv.ref}\t{vcf_snv.alt}\t.\t.\t{av_snv.info}\n'
         )
     fo.close()
