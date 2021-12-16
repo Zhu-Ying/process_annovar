@@ -32,7 +32,7 @@ def recovery_snp(av_snv: AVSnv) -> VCFSnv:
                   alt=av_snv.alt)
 
 
-def read_avinput(infile: str) -> list[AVSnv]:
+def read_avinput(infile: str) -> list:
     snvs = list()
     fi = open(infile)
     for line in fi:

@@ -9,7 +9,7 @@ Snv = namedtuple('Snv', ['chrom', 'start', 'end', 'ref', 'alt'])
 TRANS_TO_GENES: dict[str:set] = dict()
 
 
-def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -> list[GeneAnno]:
+def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -> list:
     funcs = func.split(';') if func else []
     genes = gene.split(';') if gene else []
     gene_details = re.split(r',|;', gene_detail) if gene_detail else []
@@ -65,7 +65,7 @@ def read_refgene(refgene: str):
     fi.close()
 
 
-def parse_row(row: dict, gene_db: str) -> Union[Snv, dict[str:GeneAnno], dict[str:str]]:
+def parse_row(row: dict, gene_db: str) -> [Snv, dict, dict]:
     snv = Snv(chrom=row.get('#Chr'), start=row.get('Start'), end=row.get('End'), ref=row.get('Ref'), alt=row.get('Alt'))
     info = dict()
     for key, val in row.items():
