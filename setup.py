@@ -10,6 +10,7 @@ setuptools.setup(
     author_email="win19890412@163.com",
     description="tools for ANNOVAR",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
