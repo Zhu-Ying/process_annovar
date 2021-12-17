@@ -66,10 +66,10 @@ def read_refgene(refgene: str):
 
 
 def parse_row(row: dict, gene_db: str) -> [Snv, dict, dict]:
-    snv = Snv(chrom=row.get('#Chr'), start=row.get('Start'), end=row.get('End'), ref=row.get('Ref'), alt=row.get('Alt'))
+    snv = Snv(chrom=row.get('Chr'), start=row.get('Start'), end=row.get('End'), ref=row.get('Ref'), alt=row.get('Alt'))
     info = dict()
     for key, val in row.items():
-        if key in ['Chr', '#Chr', 'Start', 'End', 'Ref', 'Alt']:
+        if key in ['Chr', 'Start', 'End', 'Ref', 'Alt']:
             continue
         keys = key.split('.')
         if len(keys) > 1 and keys[0] in ['Func', 'Gene', 'ExonicFunc', 'GeneDetail', 'AAChange']:
