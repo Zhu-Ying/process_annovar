@@ -65,7 +65,7 @@ def read_refgene(refgene: str):
     fi.close()
 
 
-def parse_row(row: dict, gene_db: str) -> [Snv, dict, dict]:
+def parse_row(row: dict, gene_db: str) -> Union[Snv, dict, dict]:
     snv = Snv(chrom=row.get('Chr'), start=row.get('Start'), end=row.get('End'), ref=row.get('Ref'), alt=row.get('Alt'))
     info = dict()
     for key, val in row.items():

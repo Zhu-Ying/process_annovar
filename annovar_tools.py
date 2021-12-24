@@ -27,5 +27,4 @@ if __name__ == '__main__':
     vcf_parser(subparsers)
     split_parser(subparsers)
     args = parser.parse_args()
-    print(args.refgenes)
     args.func(args)
