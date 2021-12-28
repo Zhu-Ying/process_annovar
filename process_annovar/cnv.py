@@ -5,7 +5,7 @@ import csv
 def load_info(info: str) -> dict:
     data = dict()
     for field in info.split(';'):
-        match = re.match(re.compile(r'^(\S+)=(\S+)$'))
+        match = re.match(re.compile(r'^(\S+)=(\S+)$'), field)
         if match:
             data.setdefault(match.group(1), match.group(2))
     return data
