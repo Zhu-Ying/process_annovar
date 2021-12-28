@@ -99,4 +99,4 @@ def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_db: str, outf
         for gene_anno in gene_annos:
             fo.write(f'{snv.chrom}\t{snv.start}\t{snv.end}\t{snv.ref}\t{snv.alt}\t'
                      f'{gene_anno.gene}\t{gene_anno.event}\t{gene_anno.region}\t{gene_anno.detail}\t{info_text}\n')
-    fi.close()
+    fi.close()      
