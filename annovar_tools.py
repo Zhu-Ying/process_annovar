@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 import argparse
 
-from process_annovar import avinput_to_vcf, split_annovar_by_gene, format_cnv_avouput
+from process_annovar import avinput_to_vcf, split_annovar_by_gene, check
 
 
 def vcf_parser(subparsers):
@@ -22,10 +22,10 @@ def split_parser(subparsers):
 
 
 def cnv_parser(subparsers):
-    sub_parser = subparsers.add_parser('cnv', help='format cnv avoutput')
+    sub_parser = subparsers.add_parser('check', help='check avoutput format')
     sub_parser.add_argument('--input', '-i', help='avoutput infile')
-    sub_parser.add_argument('--output', '-o',  help='avoutput outfile')
-    sub_parser.set_defaults(func=lambda args: format_cnv_avouput(input=args.input, output=args.output))
+    sub_parser.add_argument('--output', '-o', help='avoutput outfile')
+    sub_parser.set_defaults(func=lambda args: check(input=args.input, output=args.output))
 
 
 if __name__ == '__main__':
