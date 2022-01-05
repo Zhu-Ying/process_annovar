@@ -65,7 +65,7 @@ def read_refgene(refgene: str):
     fi.close()
 
 
-def parse_row(row: dict, gene_db: str) -> Union[Snv, dict, dict]:
+def parse_row(row: dict, gene_based: str) -> Union[Snv, dict, dict]:
     snv = Snv(chrom=row.get('Chr'), start=row.get('Start'), end=row.get('End'), ref=row.get('Ref'), alt=row.get('Alt'))
     info = dict()
     for key, val in row.items():
@@ -75,13 +75,13 @@ def parse_row(row: dict, gene_db: str) -> Union[Snv, dict, dict]:
         if len(keys) > 1 and keys[0] in ['Func', 'Gene', 'ExonicFunc', 'GeneDetail', 'AAChange']:
             continue
         info[key] = val
-    func, gene, exonic_func = row.get(f'Func.{gene_db}', ''), row.get(f'Gene.{gene_db}', ''), row.get(f'ExonicFunc.{gene_db}', '')
-    gene_detail, aa_change = row.get(f'GeneDetail.{gene_db}', ''), row.get(f'AAChange.{gene_db}', '')
+    func, gene, exonic_func = row.get(f'Func.{gene_based}', ''), row.get(f'Gene.{gene_based}', ''), row.get(f'ExonicFunc.{gene_based}', '')
+    gene_detail, aa_change = row.get(f'GeneDetail.{gene_based}', ''), row.get(f'AAChange.{gene_based}', '')
     gene_annos = split_gene_anno(func=func, gene=gene, exonic_func=exonic_func, gene_detail=gene_detail, aa_change=aa_change)
     return snv, gene_annos, info
 
 
-def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_db: str, outfile: str):
+def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_based: str, outfile: str):
     for refgene in refgenes:
         read_refgene(refgene)
     fi = open(avoutput)
@@ -90,7 +90,7 @@ def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_db: str, outf
     head = 'Chr\tStart\tEnd\tRef\tAlt\tGene\tEvent\tRegion\tDetail\t'
     info_keys = list()
     for row in reader:
-        snv, gene_annos, info = parse_row(row, gene_db)
+        snv, gene_annos, info = parse_row(row, gene_based)
         if not info_keys:
             info_keys = list(info.keys())
             head += '\t'.join(info_keys)
@@ -99,4 +99,4 @@ def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_db: str, outf
         for gene_anno in gene_annos:
             fo.write(f'{snv.chrom}\t{snv.start}\t{snv.end}\t{snv.ref}\t{snv.alt}\t'
                      f'{gene_anno.gene}\t{gene_anno.event}\t{gene_anno.region}\t{gene_anno.detail}\t{info_text}\n')
-    fi.close()      
+    fi.close()

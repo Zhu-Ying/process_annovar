@@ -16,12 +16,12 @@ def split_parser(subparsers):
     sub_parser = subparsers.add_parser('split', help='split annovar result by gene')
     sub_parser.add_argument('--avoutput', '-i', help='avoutput infile')
     sub_parser.add_argument('--refgenes', '-r', action="append", help='refgene files')
-    sub_parser.add_argument('--gene_db', '-g', help='the gene database, this execute will split annovar result by this gene_db')
+    sub_parser.add_argument('--gene_based', '-g', help='the gene_based name of annovar, this execute will split annovar result by this gene_based')
     sub_parser.add_argument('--outfile', '-o', help='the split outfile')
     sub_parser.set_defaults(func=lambda args: split_annovar_by_gene(avoutput=args.avoutput, refgenes=args.refgenes, gene_db=args.gene_db, outfile=args.outfile))
 
 
-def cnv_parser(subparsers):
+def check_parser(subparsers):
     sub_parser = subparsers.add_parser('check', help='check avoutput format')
     sub_parser.add_argument('--input', '-i', help='avoutput infile')
     sub_parser.add_argument('--output', '-o', help='avoutput outfile')
@@ -29,10 +29,10 @@ def cnv_parser(subparsers):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser('Process ANNOVAR result')
-    subparsers = parser.add_subparsers(help='Process ANNOVAR result')
+    parser = argparse.ArgumentParser('ANNOVAR tools')
+    subparsers = parser.add_subparsers(help='ANNOVAR tools')
     vcf_parser(subparsers)
     split_parser(subparsers)
-    cnv_parser(subparsers)
+    check_parser(subparsers)
     args = parser.parse_args()
     args.func(args)

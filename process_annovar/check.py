@@ -20,6 +20,11 @@ def get_header(avoutput: str):
         return fi.readline().strip().split('\t')
 
 
+def check_header(header: list):
+    if header[0] == 'Chr' and header[1] == 'Start' and header[2] == 'End' and header[3] == 'Ref' and header[4] == 'Alt':
+        raise Exception('ERROR: this is no header or header is wrong')
+
+
 def check_info(row: dict):
     variant = f'{row["Chr"]}:{row["Start"]}-{row["End"]}:{row["Ref"]}/{row["Alt"]}'
     otherinfo = row.get('Otherinfo1')
@@ -39,8 +44,7 @@ def check_info(row: dict):
 
 def check(input: str, output: str):
     fieldnames = get_header(input)
-    if 'Otherinfo1' not in fieldnames:
-        raise Exception('ERROR: the Otherinfo1 not found')
+    check_header(fieldnames)
     fi = open(input)
     fo = open(output, 'w')
     reader = csv.DictReader(fi, delimiter='\t')
