@@ -18,7 +18,7 @@ def split_parser(subparsers):
     sub_parser.add_argument('--refgenes', '-r', action="append", help='refgene files')
     sub_parser.add_argument('--gene_based', '-g', help='the gene_based name of annovar, this execute will split annovar result by this gene_based')
     sub_parser.add_argument('--outfile', '-o', help='the split outfile')
-    sub_parser.set_defaults(func=lambda args: split_annovar_by_gene(avoutput=args.avoutput, refgenes=args.refgenes, gene_db=args.gene_db, outfile=args.outfile))
+    sub_parser.set_defaults(func=lambda args: split_annovar_by_gene(avoutput=args.avoutput, refgenes=args.refgenes, gene_based=args.gene_based, outfile=args.outfile))
 
 
 def check_parser(subparsers):
