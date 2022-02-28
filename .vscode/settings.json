@@ -1,0 +1,10 @@
+{
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.yapfArgs": [
+    "--style",
+    "{BASE_ON_STYLE = pep8, COLUMN = 248}"
+  ],
+  "python.linting.flake8Args": ["--max-line-length=248"],
+  "editor.formatOnSave": true
+}

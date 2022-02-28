@@ -21,7 +21,7 @@ def get_header(avoutput: str):
 
 
 def check_header(header: list):
-    if header[0] == 'Chr' and header[1] == 'Start' and header[2] == 'End' and header[3] == 'Ref' and header[4] == 'Alt':
+    if header[0] != 'Chr' or header[1] != 'Start' or header[2] != 'End' or header[3] != 'Ref' or header[4] != 'Alt':
         raise Exception('ERROR: this is no header or header is wrong')
 
 
