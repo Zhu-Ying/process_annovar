@@ -148,3 +148,4 @@ cython_debug/
 
 .dist
 .build
+install.sh

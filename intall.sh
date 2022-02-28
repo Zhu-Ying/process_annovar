@@ -1,0 +1,1 @@
+pip uninstall -y annovar_tools && pip install git+https://gitee.com/zhuying/annovar_tools

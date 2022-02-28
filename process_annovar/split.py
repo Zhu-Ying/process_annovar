@@ -41,14 +41,14 @@ def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -
                             tmp_details.append(f'{gene}:{tmp_detail}')
                 detail = ','.join(tmp_details)
             if region.startswith('exon') and detail == '.':
-                continue
+                region, event, detail = '.', '.', '.'
             if gene_anno_dict.get(gene):
                 old: GeneAnno = gene_anno_dict.get(gene)
-                if old.region.find(region) == -1:
+                if old.region.find(region) == -1 and old.region != '.':
                     region = f'{old.region},{region}'
-                if old.event.find(event) == -1:
+                if old.event.find(event) == -1 and old.event != '.':
                     event = f'{old.event},{event}'
-                if old.detail.find(detail) == -1:
+                if old.detail.find(detail) == -1 and old.detail != '.':
                     detail = f'{old.detail},{detail}'
             gene_anno_dict[gene] = GeneAnno(gene=gene, region=region, detail=detail, event=event)
     else:
