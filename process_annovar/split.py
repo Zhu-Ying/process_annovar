@@ -36,10 +36,12 @@ def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -
                     if tmp_detail != '.':
                         trans_id = tmp_detail.split(':')[0]
                         genes_set = TRANS_TO_GENES.get(trans_id)
-                        tmp_gene = list((genes_set & set(genes) or genes_set))[0]
+                        tmp_gene = list((genes_set & set(genes)) or genes_set)[0]
                         if tmp_gene == gene:
                             tmp_details.append(f'{gene}:{tmp_detail}')
                 detail = ','.join(tmp_details)
+            if region.startswith('exon') and detail == '.':
+                continue
             if gene_anno_dict.get(gene):
                 old: GeneAnno = gene_anno_dict.get(gene)
                 if old.region.find(region) == -1:
