@@ -1,12 +1,9 @@
 import csv
 import re
-
 from collections import namedtuple
-from typing import Union
-
-GeneAnno = namedtuple('GeneAnno', ['gene', 'region', 'detail', 'event'])
+from .data import TRANS_TO_GENES, GENE_SYMBOL_TO_ID, set_data
+GeneAnno = namedtuple('GeneAnno', ['gene', 'entrez_id', 'region', 'detail', 'event'])
 Snv = namedtuple('Snv', ['chrom', 'start', 'end', 'ref', 'alt'])
-TRANS_TO_GENES: dict[str:set] = dict()
 
 
 def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -> list:
@@ -26,6 +23,7 @@ def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -
             raise Exception('the gene number lt the func number')
         for i in range(len(genes)):
             region, gene = funcs[i], genes[i]
+            entrez_id = GENE_SYMBOL_TO_ID.get(gene, '.')
             if region.find('exonic') != -1:
                 event = exonic_func
                 detail = ','.join([ac for ac in aa_changes if ac.split(':')[0] == gene]) or '.'
@@ -50,24 +48,13 @@ def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -
                     event = f'{old.event},{event}'
                 if old.detail.find(detail) == -1 and old.detail != '.':
                     detail = f'{old.detail},{detail}'
-            gene_anno_dict[gene] = GeneAnno(gene=gene, region=region, detail=detail, event=event)
+            gene_anno_dict[gene] = GeneAnno(gene=gene, entrez_id=entrez_id, region=region, detail=detail, event=event)
     else:
-        gene_anno_dict.setdefault('.', GeneAnno(gene='.', region='Non-gene', detail='.', event='.'))
+        gene_anno_dict.setdefault('.', GeneAnno(gene='.', entrez_id='.', region='Non-gene', detail='.', event='.'))
     return list(gene_anno_dict.values())
 
 
-def read_refgene(refgene: str):
-    fi = open(refgene)
-    for line in fi:
-        line = line.strip()
-        if not line or line.startswith('#'):
-            continue
-        fields = line.split('\t')
-        TRANS_TO_GENES.setdefault(fields[1], set()).add(fields[12])
-    fi.close()
-
-
-def parse_row(row: dict, gene_based: str) -> Union[Snv, dict, dict]:
+def parse_row(row: dict, gene_based: str) -> [Snv, dict, dict]:
     snv = Snv(chrom=row.get('Chr'), start=row.get('Start'), end=row.get('End'), ref=row.get('Ref'), alt=row.get('Alt'))
     info = dict()
     for key, val in row.items():
@@ -83,13 +70,12 @@ def parse_row(row: dict, gene_based: str) -> Union[Snv, dict, dict]:
     return snv, gene_annos, info
 
 
-def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_based: str, outfile: str):
-    for refgene in refgenes:
-        read_refgene(refgene)
+def split_annovar_by_gene(avoutput: str, gene_based: str, outfile: str, refgenes: list[str], ncbi_gene_info: str = None, mane_select: str = None):
+    set_data(refgenes=refgenes, ncbi_gene_info=ncbi_gene_info, mane_select=mane_select)
     fi = open(avoutput)
     fo = open(outfile, 'w')
     reader = csv.DictReader(fi, delimiter='\t')
-    head = 'Chr\tStart\tEnd\tRef\tAlt\tGene\tEvent\tRegion\tDetail\t'
+    head = 'Chr\tStart\tEnd\tRef\tAlt\tGene\tEntrezID\tEvent\tRegion\tDetail\t'
     info_keys = list()
     for row in reader:
         snv, gene_annos, info = parse_row(row, gene_based)
@@ -100,5 +86,7 @@ def split_annovar_by_gene(avoutput: str, refgenes: list[str], gene_based: str, o
         info_text = '\t'.join([info.get(key, '.') for key in info_keys])
         for gene_anno in gene_annos:
             fo.write(f'{snv.chrom}\t{snv.start}\t{snv.end}\t{snv.ref}\t{snv.alt}\t'
-                     f'{gene_anno.gene}\t{gene_anno.event}\t{gene_anno.region}\t{gene_anno.detail}\t{info_text}\n')
+                     f'{gene_anno.gene}\t{gene_anno.entrez_id}\t'
+                     f'{gene_anno.event}\t{gene_anno.region}\t{gene_anno.detail}\t{info_text}\n')
     fi.close()
+    fo.close()
