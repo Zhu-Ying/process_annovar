@@ -8,6 +8,8 @@ VCFSnv = namedtuple('VCFSnv', ['chrom', 'pos', 'ref', 'alt'])
 def fetch_seq(fasta: FastaFile, chrom: str, start: int, end: int):
     if not chrom.startswith('chr'):
         chrom = f'chr{chrom}'
+    if chrom == 'chrMT':
+        chrom = 'chrM'
     return fasta.fetch(reference=chrom, start=start, end=end)
 
 
