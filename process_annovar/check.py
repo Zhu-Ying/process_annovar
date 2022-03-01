@@ -15,11 +15,6 @@ def dump_info(data: dict) -> str:
     return ';'.join([f'{k.upper()}={v}' for k, v in data.items()])
 
 
-def get_header(avoutput: str):
-    with open(avoutput) as fi:
-        return fi.readline().strip().split('\t')
-
-
 def check_header(header: list):
     if header[0] != 'Chr' or header[1] != 'Start' or header[2] != 'End' or header[3] != 'Ref' or header[4] != 'Alt':
         raise Exception('ERROR: this is no header or header is wrong')
@@ -43,12 +38,11 @@ def check_info(row: dict):
 
 
 def check(input: str, output: str):
-    fieldnames = get_header(input)
-    check_header(fieldnames)
     fi = open(input)
     fo = open(output, 'w')
     reader = csv.DictReader(fi, delimiter='\t')
-    writer = csv.DictWriter(fo, delimiter='\t', fieldnames=fieldnames)
+    check_header(reader.fieldnames)
+    writer = csv.DictWriter(fo, delimiter='\t', fieldnames=reader.fieldnames)
     writer.writeheader()
     for row in reader:
         check_info(row)
