@@ -11,7 +11,7 @@ def add_cnv_entrez_id(avoutput: str, colnames: list[str], outfile: str, refgenes
     writer.writeheader()
     for row in reader:
         for colname in colnames:
-            if row.get(colname) == '.':
+            if not row.get(colname) or row.get(colname) == '.':
                 continue
             exon_annos = row.get(colname).replace('Name=', '').split(',')
             for i in range(len(exon_annos)):
