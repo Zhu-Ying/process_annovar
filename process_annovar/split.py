@@ -48,6 +48,8 @@ def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -
                     event = f'{old.event},{event}'
                 if old.detail.find(detail) == -1 and old.detail != '.':
                     detail = f'{old.detail},{detail}'
+                else:
+                    detail = old.detail
             gene_anno_dict[gene] = GeneAnno(gene=gene, entrez_id=entrez_id, region=region, detail=detail, event=event)
     else:
         gene_anno_dict.setdefault('.', GeneAnno(gene='.', entrez_id='.', region='Non-gene', detail='.', event='.'))
