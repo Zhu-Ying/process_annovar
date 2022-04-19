@@ -1,15 +1,22 @@
 #! /usr/bin/env python3
 import argparse
 
-from process_annovar import avinput_to_vcf, split_annovar_by_gene, add_cnv_entrez_id, check
+from process_annovar import avinput_to_vcf, avinput_to_bed, split_annovar_by_gene, add_cnv_entrez_id, check
 
 
 def vcf_parser(subparsers):
-    sub_parser = subparsers.add_parser('vcf', help='convert avinput to vcf')
+    sub_parser = subparsers.add_parser('vcf', help='convert snv avinput to vcf')
     sub_parser.add_argument('--avinput', '-i', help='avinput infile')
     sub_parser.add_argument('--reference', '-r', help='reference fasta')
     sub_parser.add_argument('--vcf', '-o', help='vcf outfile')
     sub_parser.set_defaults(func=lambda args: avinput_to_vcf(avinput=args.avinput, reference=args.reference, vcf=args.vcf))
+
+
+def bed_parser(subparsers):
+    sub_parser = subparsers.add_parser('bed', help='convert cnv avinput to bed')
+    sub_parser.add_argument('--avinput', '-i', help='avinput infile')
+    sub_parser.add_argument('--bed', '-o', help='vcf outfile')
+    sub_parser.set_defaults(func=lambda args: avinput_to_bed(avinput=args.avinput, bed=args.bed))
 
 
 def split_parser(subparsers):
@@ -59,6 +66,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser('ANNOVAR tools')
     subparsers = parser.add_subparsers(help='ANNOVAR tools')
     vcf_parser(subparsers)
+    bed_parser(subparsers)
     split_parser(subparsers)
     cnv_parser(subparsers)
     check_parser(subparsers)
