@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="annovar_tools",
-    version="0.0.4",
+    version="0.0.5",
     author="Ying Zhu",
     author_email="win19890412@163.com",
     description="tools for ANNOVAR",
