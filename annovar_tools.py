@@ -25,7 +25,7 @@ def split_parser(subparsers):
     sub_parser.add_argument('--gene_based', '-g', required=True, help='the gene_based name of annovar, this execute will split annovar result by this gene_based')
     sub_parser.add_argument('--outfile', '-o', required=True, help='the split outfile')
     sub_parser.add_argument('--refgenes', '-r', required=True, action="append", help='refgene files')
-    sub_parser.add_argument('--mane_select', '-m', help='mane_select file')
+    sub_parser.add_argument('--gene2refseq', '-m', help='gene2refseq file')
     sub_parser.add_argument('--ncbi_gene_info', '-n', help='ncbi gene info file')
     sub_parser.set_defaults(func=lambda args: split_annovar_by_gene(
         avoutput=args.avoutput,
@@ -33,7 +33,7 @@ def split_parser(subparsers):
         outfile=args.outfile,
         refgenes=args.refgenes,
         ncbi_gene_info=args.ncbi_gene_info,
-        mane_select=args.mane_select
+        gene2refseq=args.gene2refseq
     ))
 
 
@@ -43,7 +43,7 @@ def cnv_parser(subparsers):
     sub_parser.add_argument('--colnames', '-c', required=True, action="append", help='the colnames  in annovar output need add entrez_id')
     sub_parser.add_argument('--outfile', '-o', required=True, help='the split outfile')
     sub_parser.add_argument('--refgenes', '-r', required=True, action="append", help='refgene files')
-    sub_parser.add_argument('--mane_select', '-m', help='mane_select file')
+    sub_parser.add_argument('--gene2refseq', '-m', help='gene2refseq file')
     sub_parser.add_argument('--ncbi_gene_info', '-n', help='ncbi gene info file')
     sub_parser.set_defaults(func=lambda args: add_cnv_entrez_id(
         avoutput=args.avoutput,
@@ -51,7 +51,7 @@ def cnv_parser(subparsers):
         outfile=args.outfile,
         refgenes=args.refgenes,
         ncbi_gene_info=args.ncbi_gene_info,
-        mane_select=args.mane_select
+        gene2refseq=args.gene2refseq
     ))
 
 

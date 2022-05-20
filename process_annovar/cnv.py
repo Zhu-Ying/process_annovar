@@ -4,8 +4,8 @@ from .data import GENE_SYMBOL_TO_ID, set_data
 csv.field_size_limit(500 * 1024 * 1024)
 
 
-def add_cnv_entrez_id(avoutput: str, colnames: list[str], outfile: str, refgenes: list[str], ncbi_gene_info: str = None, mane_select: str = None):
-    set_data(refgenes=refgenes, ncbi_gene_info=ncbi_gene_info, mane_select=mane_select)
+def add_cnv_entrez_id(avoutput: str, colnames: list[str], outfile: str, refgenes: list[str], ncbi_gene_info: str = None, gene2refseq: str = None):
+    set_data(refgenes=refgenes, ncbi_gene_info=ncbi_gene_info, gene2refseq=gene2refseq)
     fi = open(avoutput)
     fo = open(outfile, 'w')
     reader = csv.DictReader(fi, delimiter='\t')

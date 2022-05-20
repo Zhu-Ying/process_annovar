@@ -1,7 +1,7 @@
 import csv
 import re
 from collections import namedtuple
-from .data import TRANS_TO_GENES, GENE_SYMBOL_TO_ID, set_data
+from .data import TRANS_TO_GENE, GENE_SYMBOL_TO_ID, set_data
 GeneAnno = namedtuple('GeneAnno', ['gene', 'entrez_id', 'region', 'detail', 'event'])
 Snv = namedtuple('Snv', ['chrom', 'start', 'end', 'ref', 'alt'])
 
@@ -33,9 +33,7 @@ def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -
                 for tmp_detail in gene_details:
                     if tmp_detail != '.':
                         trans_id = tmp_detail.split(':')[0]
-                        genes_set = TRANS_TO_GENES.get(trans_id)
-                        tmp_gene = list((genes_set & set(genes)) or genes_set)[0]
-                        if tmp_gene == gene:
+                        if TRANS_TO_GENE.get(trans_id) == gene:
                             tmp_details.append(f'{gene}:{tmp_detail}')
                 detail = ','.join(tmp_details)
             if region.startswith('exon') and detail == '.':
@@ -72,8 +70,8 @@ def parse_row(row: dict, gene_based: str) -> [Snv, dict, dict]:
     return snv, gene_annos, info
 
 
-def split_annovar_by_gene(avoutput: str, gene_based: str, outfile: str, refgenes: list[str], ncbi_gene_info: str = None, mane_select: str = None):
-    set_data(refgenes=refgenes, ncbi_gene_info=ncbi_gene_info, mane_select=mane_select)
+def split_annovar_by_gene(avoutput: str, gene_based: str, outfile: str, refgenes: list[str], ncbi_gene_info: str = None, gene2refseq: str = None):
+    set_data(refgenes=refgenes, ncbi_gene_info=ncbi_gene_info, gene2refseq=gene2refseq)
     fi = open(avoutput)
     fo = open(outfile, 'w')
     reader = csv.DictReader(fi, delimiter='\t')
