@@ -6,11 +6,31 @@ GeneAnno = namedtuple('GeneAnno', ['gene', 'entrez_id', 'region', 'detail', 'eve
 Snv = namedtuple('Snv', ['chrom', 'start', 'end', 'ref', 'alt'])
 
 
+def get_gene_details(gene_detail, aa_change) -> dict:
+    gene_details = re.split(r',|;', gene_detail) if gene_detail else []
+    aa_changes = re.split(r',|;', aa_change) if aa_change else []
+    trans_ids = set()
+    detail_dict = dict()
+    for detail in gene_details:
+        if detail != '.' and ':' in detail:
+            trans_id = detail.split(':')[0]
+            gene = TRANS_TO_GENE.get(trans_id)
+            if trans_id not in trans_ids:
+                detail_dict.setdefault(gene, list()).append(detail)
+            trans_ids.add(trans_id)
+    for detail in aa_changes:
+        if detail != '.' and ':' in detail:
+            gene, trans_id = detail.split(':')[0:2]
+            if trans_id not in trans_ids:
+                detail_dict.setdefault(gene, list()).append(detail)
+            trans_ids.add(trans_id)
+    return detail_dict
+
+
 def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -> list:
     funcs = func.split(';') if func else []
     genes = gene.split(';') if gene else []
-    gene_details = re.split(r',|;', gene_detail) if gene_detail else []
-    aa_changes = re.split(r',|;', aa_change) if aa_change else []
+    detail_dict = get_gene_details(gene_detail, aa_change)
     gene_anno_dict = dict()
     in_gene = bool(set(funcs) - {'intergenic', 'upstream', 'downstream'})
     if in_gene:
@@ -24,18 +44,15 @@ def split_gene_anno(func: str, gene: str, exonic_func, gene_detail, aa_change) -
         for i in range(len(genes)):
             region, gene = funcs[i], genes[i]
             entrez_id = GENE_SYMBOL_TO_ID.get(gene, '.')
-            if region.find('exonic') != -1:
+            detail = ','.join(detail_dict.get(gene, []))
+            is_exonic_splicing = re.findall(r'c.\d+[+-]\d+_\d+del|c.\d+_\d+[+-]\d+del', detail)
+            if is_exonic_splicing:
+                event = 'splicing'
+                region = 'exonic_splicing'
+            elif region.find('exonic') != -1:
                 event = exonic_func
-                detail = ','.join([ac for ac in aa_changes if ac.split(':')[0] == gene]) or '.'
             else:
                 event = 'splicing' if region.find('splic') != -1 else '.'
-                tmp_details = list()
-                for tmp_detail in gene_details:
-                    if tmp_detail != '.':
-                        trans_id = tmp_detail.split(':')[0]
-                        if TRANS_TO_GENE.get(trans_id) == gene:
-                            tmp_details.append(f'{gene}:{tmp_detail}')
-                detail = ','.join(tmp_details)
             if region.startswith('exon') and detail == '.':
                 region, event, detail = '.', '.', '.'
             if gene_anno_dict.get(gene):
