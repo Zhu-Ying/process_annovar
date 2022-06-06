@@ -16,7 +16,7 @@ def get_gene_details(gene_detail, aa_change) -> dict:
             trans_id = detail.split(':')[0]
             gene = TRANS_TO_GENE.get(trans_id)
             if trans_id not in trans_ids:
-                detail_dict.setdefault(gene, list()).append(detail)
+                detail_dict.setdefault(gene, list()).append(f'{gene}:{detail}')
             trans_ids.add(trans_id)
     for detail in aa_changes:
         if detail != '.' and ':' in detail:
