@@ -6,24 +6,43 @@ GeneAnno = namedtuple('GeneAnno', ['gene', 'entrez_id', 'region', 'detail', 'eve
 Snv = namedtuple('Snv', ['chrom', 'start', 'end', 'ref', 'alt'])
 
 
+def get_detail_c_distance(detail: str) -> int:
+    # 获取 c. 后面的偏移量
+    res = re.match(r'.*:c.\d+\+(\d+).*', detail)
+    if res:
+        return int(res.groups()[0])
+    return 0
+
+
+def get_closest_detail_dict(trans_detail_dict, trans_id, detail):
+    if trans_detail_dict.get(trans_id):
+        exists_detail = trans_detail_dict[trans_id]
+        exists_detail_distance = get_detail_c_distance(exists_detail)
+        this_detail_distance = get_detail_c_distance(detail)
+        if abs(this_detail_distance) < abs(exists_detail_distance):
+            trans_detail_dict[trans_id] = detail
+    else:
+        trans_detail_dict[trans_id] = detail
+    return trans_detail_dict
+
+
 def get_gene_details(gene_detail, aa_change) -> dict:
     gene_details = re.split(r',|;', gene_detail) if gene_detail else []
     aa_changes = re.split(r',|;', aa_change) if aa_change else []
-    trans_ids = set()
     detail_dict = dict()
+    trans_detail_dict = dict()
     for detail in gene_details:
         if detail != '.' and ':' in detail:
             trans_id = detail.split(':')[0]
             gene = TRANS_TO_GENE.get(trans_id)
-            if trans_id not in trans_ids:
-                detail_dict.setdefault(gene, list()).append(f'{gene}:{detail}')
-            trans_ids.add(trans_id)
+            trans_detail_dict = get_closest_detail_dict(trans_detail_dict, f'{gene}\t{trans_id}', detail)
     for detail in aa_changes:
         if detail != '.' and ':' in detail:
             gene, trans_id = detail.split(':')[0:2]
-            if trans_id not in trans_ids:
-                detail_dict.setdefault(gene, list()).append(detail)
-            trans_ids.add(trans_id)
+            trans_detail_dict = get_closest_detail_dict(trans_detail_dict, f'{gene}\t{trans_id}', detail)
+    for gene_trans, detail in trans_detail_dict.items():
+        gene, trans_id = gene_trans.split('\t')
+        detail_dict.setdefault(gene, list()).append(detail)
     return detail_dict
 
 
