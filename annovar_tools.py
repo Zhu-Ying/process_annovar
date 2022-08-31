@@ -27,13 +27,15 @@ def split_parser(subparsers):
     sub_parser.add_argument('--refgenes', '-r', required=True, action="append", help='refgene files')
     sub_parser.add_argument('--gene2refseq', '-m', help='gene2refseq file')
     sub_parser.add_argument('--ncbi_gene_info', '-n', help='ncbi gene info file')
+    sub_parser.add_argument('--gene_hgnc_name', '-x', help='(mito) gene hgnc name file')
     sub_parser.set_defaults(func=lambda args: split_annovar_by_gene(
         avoutput=args.avoutput,
         gene_based=args.gene_based,
         outfile=args.outfile,
         refgenes=args.refgenes,
         ncbi_gene_info=args.ncbi_gene_info,
-        gene2refseq=args.gene2refseq
+        gene2refseq=args.gene2refseq,
+        gene_hgnc_name=args.gene_hgnc_name
     ))
 
 

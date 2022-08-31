@@ -1,7 +1,7 @@
 import csv
 import re
 from collections import namedtuple
-from .data import TRANS_TO_GENE, GENE_SYMBOL_TO_ID, set_data
+from .data import TRANS_TO_GENE, GENE_SYMBOL_TO_ID, SYMBOL_TO_HGNC_NAME, set_data
 GeneAnno = namedtuple('GeneAnno', ['gene', 'entrez_id', 'region', 'detail', 'event'])
 Snv = namedtuple('Snv', ['chrom', 'start', 'end', 'ref', 'alt'])
 
@@ -106,8 +106,9 @@ def parse_row(row: dict, gene_based: str) -> [Snv, dict, dict]:
     return snv, gene_annos, info
 
 
-def split_annovar_by_gene(avoutput: str, gene_based: str, outfile: str, refgenes: list[str], ncbi_gene_info: str = None, gene2refseq: str = None):
-    set_data(refgenes=refgenes, ncbi_gene_info=ncbi_gene_info, gene2refseq=gene2refseq)
+def split_annovar_by_gene(avoutput: str, gene_based: str, outfile: str, refgenes: list[str], ncbi_gene_info: str = None,
+                          gene2refseq: str = None, gene_hgnc_name: str = None):
+    set_data(refgenes=refgenes, ncbi_gene_info=ncbi_gene_info, gene2refseq=gene2refseq, gene_hgnc_name=gene_hgnc_name)
     fi = open(avoutput)
     fo = open(outfile, 'w')
     reader = csv.DictReader(fi, delimiter='\t')
@@ -121,8 +122,14 @@ def split_annovar_by_gene(avoutput: str, gene_based: str, outfile: str, refgenes
             fo.write(f'{head}\n')
         info_text = '\t'.join([info.get(key, '.') for key in info_keys])
         for gene_anno in gene_annos:
+            gene_symbol, gene_detail = gene_anno.gene, gene_anno.detail
+            if snv.chrom.upper() == 'MT':
+                hgnc_gene_symbol = SYMBOL_TO_HGNC_NAME.get(gene_symbol, None)
+                if hgnc_gene_symbol:
+                    gene_symbol = hgnc_gene_symbol
+                    gene_detail = gene_anno.detail.replace(gene_anno.gene, hgnc_gene_symbol)
             fo.write(f'{snv.chrom}\t{snv.start}\t{snv.end}\t{snv.ref}\t{snv.alt}\t'
-                     f'{gene_anno.gene}\t{gene_anno.entrez_id}\t'
-                     f'{gene_anno.event}\t{gene_anno.region}\t{gene_anno.detail}\t{info_text}\n')
+                     f'{gene_symbol}\t{gene_anno.entrez_id}\t'
+                     f'{gene_anno.event}\t{gene_anno.region}\t{gene_detail}\t{info_text}\n')
     fi.close()
     fo.close()

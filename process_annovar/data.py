@@ -2,6 +2,7 @@ import pandas as pd
 
 TRANS_TO_GENE: dict[str:set] = dict()
 GENE_SYMBOL_TO_ID: dict[str:str] = dict()
+SYMBOL_TO_HGNC_NAME: dict[str:str] = dict()
 
 
 def read_gene2refseq(gene2refseq: str) -> dict:
@@ -33,7 +34,14 @@ def read_refgene(refgene: str) -> dict:
     TRANS_TO_GENE.update(df.set_index(['Name'])['Gene'].to_dict())
 
 
-def set_data(refgenes: list[str], ncbi_gene_info: str, gene2refseq: str):
+def read_gene_hgnc_name(gene_hgnc_name: str) -> dict:
+    df = pd.read_table(gene_hgnc_name)
+    for row in df.iloc:
+        symbol, name = row.get('symbol'), row.get('name')
+        SYMBOL_TO_HGNC_NAME[symbol] = name
+
+
+def set_data(refgenes: list[str], ncbi_gene_info: str, gene2refseq: str, gene_hgnc_name: str):
     [read_refgene(refgene) for refgene in refgenes]
     if ncbi_gene_info:
         symbol_to_id, synonyms_to_id = read_ncbi_gene_info(ncbi_gene_info)
@@ -44,3 +52,5 @@ def set_data(refgenes: list[str], ncbi_gene_info: str, gene2refseq: str):
         entrez_id = trans_to_id.get(trans_short) or symbol_to_id.get(symbol) or synonyms_to_id.get(symbol)
         if entrez_id:
             GENE_SYMBOL_TO_ID.setdefault(symbol, entrez_id)
+    if gene_hgnc_name:
+        read_gene_hgnc_name(gene_hgnc_name)
