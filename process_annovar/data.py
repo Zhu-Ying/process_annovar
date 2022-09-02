@@ -41,7 +41,7 @@ def read_gene_hgnc_name(gene_hgnc_name: str) -> dict:
         SYMBOL_TO_HGNC_NAME[symbol] = name
 
 
-def set_data(refgenes: list[str], ncbi_gene_info: str, gene2refseq: str, gene_hgnc_name: str):
+def set_data(refgenes: list[str], ncbi_gene_info: str, gene2refseq: str, gene_hgnc_name: str = None):
     [read_refgene(refgene) for refgene in refgenes]
     if ncbi_gene_info:
         symbol_to_id, synonyms_to_id = read_ncbi_gene_info(ncbi_gene_info)
