@@ -35,7 +35,7 @@ def get_gene_details(gene_detail, aa_change) -> dict:
         if detail != '.' and ':' in detail:
             trans_id = detail.split(':')[0]
             gene = TRANS_TO_GENE.get(trans_id)
-            trans_detail_dict = get_closest_detail_dict(trans_detail_dict, f'{gene}\t{trans_id}', f'{gene}\t{detail}')
+            trans_detail_dict = get_closest_detail_dict(trans_detail_dict, f'{gene}\t{trans_id}', f'{gene}:{detail}')
     for detail in aa_changes:
         if detail != '.' and ':' in detail:
             gene, trans_id = detail.split(':')[0:2]
